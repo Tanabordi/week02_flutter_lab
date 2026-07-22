@@ -68,6 +68,16 @@ class HomePage extends StatelessWidget {
               icon: Icons.book,
               color: Colors.orange,
             ),
+
+            const SizedBox(height: 8),
+
+            // ✏️ ทดลอง E: InfoCard ที่ 4 — แสดง "คณะ" สีแดง
+            const InfoCard(
+              title: 'คณะ',
+              value: 'ครุศาสตร์อุตสาหกรรมและเทคโนโลยี',
+              icon: Icons.account_balance,
+              color: Colors.red,
+            ),
           ],
         ),
       ),
