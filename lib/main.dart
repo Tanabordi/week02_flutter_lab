@@ -35,6 +35,7 @@ class _MainScreenState extends State<MainScreen> {
     DashboardPage(),
     CounterPage(),
     FormPage(),
+    AboutPage(),
   ];
 
   @override
@@ -58,6 +59,10 @@ class _MainScreenState extends State<MainScreen> {
           NavigationDestination(
             icon: Icon(Icons.edit),
             label: 'Form',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person),
+            label: 'About',
           ),
         ],
       ),
@@ -140,6 +145,39 @@ class FormPage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: const GreetingForm(),
+    );
+  }
+}
+
+// ─── Page 4: About (Task A) ─────────────────────────────
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('About Me'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.teal,
+              backgroundImage: AssetImage('assets/avatar.png'),
+            ),
+            const SizedBox(height: 20),
+            const Text('ธนบดี บุญภมร', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('รหัสนักศึกษา: 67030298', style: TextStyle(fontSize: 18, color: Colors.grey.shade700)),
+            const SizedBox(height: 8),
+            Text('คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี', style: TextStyle(fontSize: 16, color: Colors.grey.shade600)),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -326,6 +364,10 @@ class _GreetingFormState extends State<GreetingForm> {
   final _nameController = TextEditingController();
   String _greeting = '';
   String _error = '';
+  
+  // เพิ่มตัวแปรสำหรับโจทย์ C
+  String _language = 'ไทย';
+  final List<String> _languages = ['ไทย', 'English', '日本語'];
 
   @override
   void dispose() {
@@ -342,8 +384,19 @@ class _GreetingFormState extends State<GreetingForm> {
       } else {
         _error = '';
         final h = DateTime.now().hour;
-        final period = h < 12 ? 'ตอนเช้า' : h < 17 ? 'ตอนบ่าย' : 'ตอนเย็น';
-        _greeting = 'สวัสดี$period คุณ$name! 👋\nยินดีต้อนรับสู่ Flutter';
+        
+        // แยกเงื่อนไขคำทักทายตามภาษา
+        if (_language == 'ไทย') {
+          final period = h < 12 ? 'ตอนเช้า' : h < 17 ? 'ตอนบ่าย' : 'ตอนเย็น';
+          _greeting = 'สวัสดี$period คุณ$name! 👋\nยินดีต้อนรับสู่ Flutter';
+        } else if (_language == 'English') {
+          final period = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+          _greeting = 'Good $period, $name! 👋\nWelcome to Flutter';
+        } else {
+          // 日本語
+          final period = h < 12 ? 'おはようございます' : h < 17 ? 'こんにちは' : 'こんばんは';
+          _greeting = '$period、$nameさん！👋\nFlutterへようこそ';
+        }
       }
     });
   }
@@ -373,6 +426,24 @@ class _GreetingFormState extends State<GreetingForm> {
               errorText: _error.isEmpty ? null : _error,
             ),
             onSubmitted: (_) => _submit(),
+          ),
+          const SizedBox(height: 12),
+          // เพิ่ม Dropdown สำหรับเลือกภาษา (Task C)
+          DropdownButtonFormField<String>(
+            value: _language,
+            decoration: const InputDecoration(
+              labelText: 'ภาษาของคำทักทาย',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.language),
+            ),
+            items: _languages.map((lang) {
+              return DropdownMenuItem(value: lang, child: Text(lang));
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) {
+                setState(() => _language = val);
+              }
+            },
           ),
           const SizedBox(height: 12),
           Row(
