@@ -34,8 +34,8 @@ class HomePage extends StatelessWidget {
       ),
       body: const Center(
         child: Text(
-          'สวัสดี Flutter! 🎉',
-          style: TextStyle(fontSize: 24),
+          'นายธนบดี บุญภมร 67030298 🧑‍🎓',
+          style: TextStyle(fontSize: 48),
         ),
       ),
     );
