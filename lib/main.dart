@@ -1,12 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-// จุดเริ่มต้นของ App ทุกตัว
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
-// Root Widget ของแอป
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -14,30 +10,101 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Week 02 Lab',
-      // ปิด Banner "DEBUG" ที่มุมขวาบน
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        useMaterial3: true,
+      ),
+      home: const MainScreen(),
     );
   }
 }
 
-// หน้าแรก
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+// ─── Main Screen with Bottom Navigation ─────────────────
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = const [
+    DashboardPage(),
+    CounterPage(),
+    FormPage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calculate),
+            label: 'Counter',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.edit),
+            label: 'Form',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Page 1: Dashboard ──────────────────────────────────
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Week 02 Flutter Lab'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
+        title: const Text('Dashboard'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: const SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClockWidget(),
-            CounterSection(),
+            SizedBox(height: 16),
+            Text('ข้อมูลสรุป',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            InfoCard(
+              title: 'จำนวนนักศึกษา', value: '42 คน',
+              icon: Icons.people, color: Colors.indigo,
+            ),
+            SizedBox(height: 8),
+            InfoCard(
+              title: 'GPA เฉลี่ย', value: '3.21',
+              icon: Icons.school, color: Colors.green,
+            ),
+            SizedBox(height: 8),
+            InfoCard(
+              title: 'รายวิชาที่ลงทะเบียน', value: '5 วิชา',
+              icon: Icons.book, color: Colors.orange,
+            ),
+            SizedBox(height: 8),
+            InfoCard(
+              title: 'คณะ:', value: 'ครุศาสตร์อุตสาหกรรมและเทคโนโลยี',
+              icon: Icons.account_balance, color: Colors.red,
+            ),
           ],
         ),
       ),
@@ -45,7 +112,40 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// StatelessWidget ที่รับ Parameter
+// ─── Page 2: Counter ────────────────────────────────────
+class CounterPage extends StatelessWidget {
+  const CounterPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Counter'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: const CounterSection(),
+    );
+  }
+}
+
+// ─── Page 3: Form ───────────────────────────────────────
+class FormPage extends StatelessWidget {
+  const FormPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('สร้างคำทักทาย'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: const GreetingForm(),
+    );
+  }
+}
+
+// ─── Reusable Widgets ────────────────────────────────────
+
 class InfoCard extends StatelessWidget {
   final String title;
   final String value;
@@ -57,41 +157,29 @@ class InfoCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.icon,
-    this.color = Colors.indigo, // มีค่า default
+    this.color = Colors.indigo,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // ไอคอนในวงกลมสี
             CircleAvatar(
               backgroundColor: color.withOpacity(0.2),
               child: Icon(icon, color: color),
             ),
             const SizedBox(width: 16),
-            // ข้อมูล
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title,
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                Text(value,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
           ],
@@ -101,261 +189,8 @@ class InfoCard extends StatelessWidget {
   }
 }
 
-// ===== การทดลองที่ 4: StatefulWidget =====
-class CounterSection extends StatefulWidget {
-  const CounterSection({super.key});
+// ─── ClockWidget (StatefulWidget) ───────────────────────
 
-  @override
-  State<CounterSection> createState() => _CounterSectionState();
-}
-
-class _CounterSectionState extends State<CounterSection> {
-  // === State ===
-  int _count = 0;  // ตัวเลข Counter
-  int _step = 1;   // ค่าที่เพิ่มแต่ละครั้ง
-
-  // === Methods ===
-  void _increment() {
-    // ✏️ ทดลอง F: ลบ setState() ออก — UI จะไม่ refresh แม้ค่าเปลี่ยน!
-    // (กดปุ่ม + แล้วสังเกตว่าตัวเลขบนหน้าจอไม่เปลี่ยน)
-    _count += _step;
-
-    // ✅ เมื่อสังเกตแล้ว ให้ใส่ setState() กลับคืนดังนี้:
-    // setState(() {
-    //   _count += _step;
-    // });
-  }
-
-  void _decrement() {
-    setState(() {
-      if (_count - _step < 0) {
-        _count = 0; // ไม่ให้ต่ำกว่า 0
-      } else {
-        _count -= _step;
-      }
-    });
-  }
-
-  void _reset() {
-    setState(() {
-      _count = 0;
-    });
-  }
-
-  void _changeStep(int newStep) {
-    setState(() {
-      _step = newStep;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const Text(
-              'Counter Widget',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-
-            // แสดงตัวเลข
-            Text(
-              '$_count',
-              style: TextStyle(
-                fontSize: 64,
-                fontWeight: FontWeight.bold,
-                color: _count > 0
-                    ? Colors.indigo
-                    : _count < 0
-                        ? Colors.red
-                        : Colors.grey,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // ปุ่มควบคุม
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'dec',
-                  onPressed: _decrement,
-                  backgroundColor: Colors.red.shade100,
-                  child: const Icon(Icons.remove, color: Colors.red),
-                ),
-                const SizedBox(width: 16),
-                OutlinedButton(
-                  onPressed: _reset,
-                  child: const Text('Reset'),
-                ),
-                const SizedBox(width: 16),
-                FloatingActionButton(
-                  heroTag: 'inc',
-                  onPressed: _increment,
-                  backgroundColor: Colors.green.shade100,
-                  child: const Icon(Icons.add, color: Colors.green),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // เลือก Step
-            const Text('ค่าที่เพิ่มแต่ละครั้ง:'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [1, 5, 10].map((s) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ChoiceChip(
-                    label: Text('$s'),
-                    selected: _step == s,
-                    onSelected: (_) => _changeStep(s),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ===== การทดลองที่ 5: StatefulWidget Form และ Text Input =====
-class GreetingForm extends StatefulWidget {
-  const GreetingForm({super.key});
-
-  @override
-  State<GreetingForm> createState() => _GreetingFormState();
-}
-
-class _GreetingFormState extends State<GreetingForm> {
-  // TextEditingController จัดการ TextField
-  final _nameController = TextEditingController();
-  String _greeting = '';
-  String _error = '';
-
-  @override
-  void dispose() {
-    // ❗ ต้อง dispose Controller เสมอ เพื่อป้องกัน Memory Leak
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _generateGreeting() {
-    final name = _nameController.text.trim();
-
-    setState(() {
-      if (name.isEmpty) {
-        _error = 'กรุณากรอกชื่อ';
-        _greeting = '';
-      } else {
-        _error = '';
-        final hour = DateTime.now().hour;
-        String timeOfDay;
-        if (hour < 12) {
-          timeOfDay = 'ตอนเช้า';
-        } else if (hour < 17) {
-          timeOfDay = 'ตอนบ่าย';
-        } else {
-          timeOfDay = 'ตอนเย็น';
-        }
-        _greeting = 'สวัสดี$timeOfDay คุณ$name! 👋\nยินดีต้อนรับสู่ Flutter';
-      }
-    });
-  }
-
-  // ✏️ ทดลอง G: Reset — ล้าง field และซ่อน error
-  void _resetForm() {
-    _nameController.clear();
-    setState(() {
-      _greeting = '';
-      _error = '';
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'สร้างคำทักทาย',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-
-          // TextField — ช่องรับข้อมูล
-          TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: 'ชื่อของคุณ',
-              hintText: 'เช่น สมชาย',
-              prefixIcon: const Icon(Icons.person),
-              border: const OutlineInputBorder(),
-              // แสดง error ถ้ามี
-              errorText: _error.isEmpty ? null : _error,
-            ),
-            // กด Enter บน Keyboard → สร้างคำทักทาย
-            onSubmitted: (_) => _generateGreeting(),
-          ),
-
-          const SizedBox(height: 12),
-
-          // ปุ่ม
-          ElevatedButton.icon(
-            onPressed: _generateGreeting,
-            icon: const Icon(Icons.waving_hand),
-            label: const Text('สร้างคำทักทาย'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // ✏️ ทดลอง G: ปุ่ม Reset — ล้าง field และซ่อน error
-          OutlinedButton.icon(
-            onPressed: _resetForm,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Reset (clear field)'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // แสดงผล
-          if (_greeting.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.indigo.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.indigo.shade200),
-              ),
-              child: Text(
-                _greeting,
-                style: const TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-// ===== การทดลองที่ 6: Lifecycle — initState และ dispose =====
 class ClockWidget extends StatefulWidget {
   const ClockWidget({super.key});
 
@@ -369,63 +204,209 @@ class _ClockWidgetState extends State<ClockWidget> {
 
   @override
   void initState() {
-    super.initState(); // ❗ ต้องเรียกก่อนเสมอ
+    super.initState();
     _currentTime = DateTime.now();
-
-    // ตั้ง Timer อัปเดตเวลาทุก 1 วินาที
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) { // ❗ ตรวจสอบก่อน setState เสมอ
-        setState(() {
-          _currentTime = DateTime.now();
-        });
-      }
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => _currentTime = DateTime.now());
     });
   }
 
   @override
   void dispose() {
-    _timer?.cancel(); // ❗ ต้องยกเลิก Timer เพื่อป้องกัน Memory Leak
-    super.dispose();  // ❗ ต้องเรียกหลังสุดเสมอ
+    _timer?.cancel();
+    super.dispose();
   }
 
-  String _formatTime(DateTime dt) {
-    String h = dt.hour.toString().padLeft(2, '0');
-    String m = dt.minute.toString().padLeft(2, '0');
-    String s = dt.second.toString().padLeft(2, '0');
-    return '$h:$m:$s';
-  }
-
-  String _formatDate(DateTime dt) {
-    const months = [
-      '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
-      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
-    ];
-    return '${dt.day} ${months[dt.month]} ${dt.year + 543}';
-  }
+  String _pad(int n) => n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(16),
       child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Icon(Icons.access_time, size: 40, color: Colors.indigo),
-            const SizedBox(height: 8),
-            Text(
-              _formatTime(_currentTime),
-              style: const TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: Column(
+            children: [
+              const Icon(Icons.access_time, size: 32, color: Colors.indigo),
+              Text(
+                '${_pad(_currentTime.hour)}:${_pad(_currentTime.minute)}:${_pad(_currentTime.second)}',
+                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+              Text('${_currentTime.day}/${_currentTime.month}/${_currentTime.year + 543}',
+                  style: TextStyle(color: Colors.grey.shade600)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── CounterSection (StatefulWidget) ────────────────────
+
+class CounterSection extends StatefulWidget {
+  const CounterSection({super.key});
+
+  @override
+  State<CounterSection> createState() => _CounterSectionState();
+}
+
+class _CounterSectionState extends State<CounterSection> {
+  int _count = 0;
+  int _step = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '$_count',
+            style: TextStyle(
+              fontSize: 80,
+              fontWeight: FontWeight.bold,
+              color: _count >= 0 ? Colors.indigo : Colors.red,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FloatingActionButton(
+                heroTag: 'dec',
+                onPressed: () => setState(() => _count -= _step),
+                backgroundColor: Colors.red.shade50,
+                child: const Icon(Icons.remove, color: Colors.red),
+              ),
+              const SizedBox(width: 16),
+              OutlinedButton(
+                onPressed: () => setState(() => _count = 0),
+                child: const Text('Reset'),
+              ),
+              const SizedBox(width: 16),
+              FloatingActionButton(
+                heroTag: 'inc',
+                onPressed: () => setState(() => _count += _step),
+                backgroundColor: Colors.green.shade50,
+                child: const Icon(Icons.add, color: Colors.green),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text('Step:'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [1, 5, 10, 100].map((s) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ChoiceChip(
+                label: Text('$s'),
+                selected: _step == s,
+                onSelected: (_) => setState(() => _step = s),
+              ),
+            )).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── GreetingForm (StatefulWidget) ──────────────────────
+
+class GreetingForm extends StatefulWidget {
+  const GreetingForm({super.key});
+
+  @override
+  State<GreetingForm> createState() => _GreetingFormState();
+}
+
+class _GreetingFormState extends State<GreetingForm> {
+  final _nameController = TextEditingController();
+  String _greeting = '';
+  String _error = '';
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _nameController.text.trim();
+    setState(() {
+      if (name.isEmpty) {
+        _error = 'กรุณากรอกชื่อ';
+        _greeting = '';
+      } else {
+        _error = '';
+        final h = DateTime.now().hour;
+        final period = h < 12 ? 'ตอนเช้า' : h < 17 ? 'ตอนบ่าย' : 'ตอนเย็น';
+        _greeting = 'สวัสดี$period คุณ$name! 👋\nยินดีต้อนรับสู่ Flutter';
+      }
+    });
+  }
+
+  void _clear() {
+    _nameController.clear();
+    setState(() {
+      _greeting = '';
+      _error = '';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: 'ชื่อของคุณ',
+              hintText: 'เช่น สมชาย',
+              prefixIcon: const Icon(Icons.person),
+              border: const OutlineInputBorder(),
+              errorText: _error.isEmpty ? null : _error,
+            ),
+            onSubmitted: (_) => _submit(),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _submit,
+                  icon: const Icon(Icons.waving_hand),
+                  label: const Text('สร้างคำทักทาย'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton(
+                onPressed: _clear,
+                child: const Text('ล้าง'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          if (_greeting.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.indigo.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.indigo.shade200),
+              ),
+              child: Text(
+                _greeting,
+                style: const TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
               ),
             ),
-            Text(
-              _formatDate(_currentTime),
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
