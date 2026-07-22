@@ -32,30 +32,41 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
       ),
-      // ✏️ ทดลอง C: แสดงทั้ง 4 ค่าของ MainAxisAlignment พร้อมกันในหน้าเดียว
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _AlignmentDemo(
-              label: 'MainAxisAlignment.start',
-              alignment: MainAxisAlignment.start,
+            const Text(
+              'ข้อมูลสรุป',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            _AlignmentDemo(
-              label: 'MainAxisAlignment.end',
-              alignment: MainAxisAlignment.end,
+            const SizedBox(height: 12),
+
+            // ใช้ InfoCard ซ้ำได้หลายครั้งด้วย Parameter ต่างกัน
+            const InfoCard(
+              title: 'จำนวนนักศึกษา',
+              value: '42 คน',
+              icon: Icons.people,
+              color: Colors.indigo,
             ),
-            const SizedBox(height: 16),
-            _AlignmentDemo(
-              label: 'MainAxisAlignment.spaceBetween',
-              alignment: MainAxisAlignment.spaceBetween,
+
+            const SizedBox(height: 8),
+
+            const InfoCard(
+              title: 'GPA เฉลี่ย',
+              value: '3.21',
+              icon: Icons.school,
+              color: Colors.green,
             ),
-            const SizedBox(height: 16),
-            _AlignmentDemo(
-              label: 'MainAxisAlignment.spaceEvenly',
-              alignment: MainAxisAlignment.spaceEvenly,
+
+            const SizedBox(height: 8),
+
+            InfoCard(
+              title: 'รายวิชาที่ลงทะเบียน',
+              value: '5 วิชา',
+              icon: Icons.book,
+              color: Colors.orange,
             ),
           ],
         ),
@@ -64,90 +75,58 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// Helper Widget — แสดง Column + Row + Container พร้อม label บอกชื่อ alignment
-class _AlignmentDemo extends StatelessWidget {
-  final String label;
-  final MainAxisAlignment alignment;
+// StatelessWidget ที่รับ Parameter
+class InfoCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color color;
 
-  const _AlignmentDemo({required this.label, required this.alignment});
+  const InfoCard({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.icon,
+    this.color = Colors.indigo, // มีค่า default
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Label บอกชื่อ alignment
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: Colors.indigo,
-          ),
-        ),
-        const SizedBox(height: 4),
-        // กรอบ Container ที่มีความสูงคงที่ เพื่อให้เห็นความแตกต่างชัด
-        Container(
-          width: double.infinity,
-          height: 220,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.indigo.shade200, width: 1.5),
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.indigo.shade50,
-          ),
-          child: Column(
-            mainAxisAlignment: alignment,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Container — กล่องที่ปรับแต่งได้
-              Container(
-                width: 160,
-                height: 50,
-                color: Colors.indigo.shade100,
-                child: const Center(
-                  child: Text('Container', style: TextStyle(fontSize: 14)),
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            // ไอคอนในวงกลมสี
+            CircleAvatar(
+              backgroundColor: color.withOpacity(0.2),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 16),
+            // ข้อมูล
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
-              ),
-
-              // Row — จัดเรียงแนวนอน
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.red.shade200,
-                      child: const Center(child: Text('A'))),
-                  const SizedBox(width: 6),
-                  Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.green.shade200,
-                      child: const Center(child: Text('B'))),
-                  const SizedBox(width: 6),
-                  Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.blue.shade200,
-                      child: const Center(child: Text('C'))),
-                  const SizedBox(width: 6),
-                  // ✏️ ทดลอง D: Container D สีม่วง ขนาด 80×80
-                  Container(
-                      width: 50,
-                      height: 50,
-                      color: Colors.purple.shade200,
-                      child: const Center(child: Text('D'))),
-                ],
-              ),
-
-              const Text(
-                'Column + Row + Container',
-                style: TextStyle(fontSize: 12),
-              ),
-            ],
-          ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
