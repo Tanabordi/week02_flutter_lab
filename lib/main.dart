@@ -130,6 +130,13 @@ class _AlignmentDemo extends StatelessWidget {
                       height: 50,
                       color: Colors.blue.shade200,
                       child: const Center(child: Text('C'))),
+                  const SizedBox(width: 6),
+                  // ✏️ ทดลอง D: Container D สีม่วง ขนาด 80×80
+                  Container(
+                      width: 50,
+                      height: 50,
+                      color: Colors.purple.shade200,
+                      child: const Center(child: Text('D'))),
                 ],
               ),
 
