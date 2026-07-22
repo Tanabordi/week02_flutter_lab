@@ -108,10 +108,14 @@ class _CounterSectionState extends State<CounterSection> {
 
   // === Methods ===
   void _increment() {
-    setState(() {
-      _count += _step;
-      // ลอง: แก้เป็น _count++ แล้วดูว่าต่างกันไหม
-    });
+    // ✏️ ทดลอง F: ลบ setState() ออก — UI จะไม่ refresh แม้ค่าเปลี่ยน!
+    // (กดปุ่ม + แล้วสังเกตว่าตัวเลขบนหน้าจอไม่เปลี่ยน)
+    _count += _step;
+
+    // ✅ เมื่อสังเกตแล้ว ให้ใส่ setState() กลับคืนดังนี้:
+    // setState(() {
+    //   _count += _step;
+    // });
   }
 
   void _decrement() {
