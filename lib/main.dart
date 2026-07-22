@@ -265,6 +265,15 @@ class _GreetingFormState extends State<GreetingForm> {
     });
   }
 
+  // ✏️ ทดลอง G: Reset — ล้าง field และซ่อน error
+  void _resetForm() {
+    _nameController.clear();
+    setState(() {
+      _greeting = '';
+      _error = '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -301,6 +310,18 @@ class _GreetingFormState extends State<GreetingForm> {
             icon: const Icon(Icons.waving_hand),
             label: const Text('สร้างคำทักทาย'),
             style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // ✏️ ทดลอง G: ปุ่ม Reset — ล้าง field และซ่อน error
+          OutlinedButton.icon(
+            onPressed: _resetForm,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Reset (clear field)'),
+            style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
